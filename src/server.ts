@@ -25,7 +25,11 @@ route.post("/generate", (req: Request, res: Response) => {
   try {
     QRCode.toDataURL(
       content,
-      { errorCorrectionLevel: "H" },
+      {
+        errorCorrectionLevel: "H",
+        width: 512,
+        margin: 2,
+      },
       function (err, url) {
         const image = url.replace(/^data:image\/\w+;base64,/, "");
         const imageBuffer = Buffer.from(image, "base64");
@@ -33,19 +37,19 @@ route.post("/generate", (req: Request, res: Response) => {
         const filePath = path.join(
           __dirname,
           "downloads",
-          `${new Date().getTime()}-qrcode.png`
+          `${new Date().getTime()}-qrcode.png`,
         );
         fs.writeFileSync(filePath, imageBuffer);
 
         res.setHeader(
           "Content-disposition",
-          "attachment; filename=imagem_download.png"
+          "attachment; filename=imagem_download.png",
         );
         res.setHeader("Content-type", "image/png");
 
         // Enviar a imagem como resposta
         return res.sendFile(filePath);
-      }
+      },
     );
   } catch (error) {
     return res.status(400).json({ error: error });
